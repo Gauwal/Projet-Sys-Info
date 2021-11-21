@@ -16,7 +16,7 @@ void *philosophe(void* arg){
   int *id=(int *) arg;
   int left = *id;
   int right = (left + 1) % numb;
-  for(int i=0; i<10000;i++){
+  for(int i=0; i<100000;i++){
     if(left < right){
       pthread_mutex_lock(&baguettes[left]);
       pthread_mutex_lock(&baguettes[right]);
@@ -29,7 +29,6 @@ void *philosophe(void* arg){
     pthread_mutex_unlock(&baguettes[left]);
     pthread_mutex_unlock(&baguettes[right]);
   }
-  printf("%d \n",left);
   return NULL;
 }
 
