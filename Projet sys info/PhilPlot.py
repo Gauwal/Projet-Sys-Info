@@ -11,14 +11,14 @@ print(y,er)
 
 fig1 = plt.figure()
 
-x = [i for i in range(1,7)]
+x = [2*i for i in range(1,7)]
 
 plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-")
 
-plt.xlabel("Nombre de threads")
+plt.xlabel("Nombre de philosophes")
 plt.ylabel("Temps(s)")
 plt.title("Philosophes")
 plt.ylim(0,max(y)+max(er))
-plt.xlim(0,7)
+plt.xlim(0,13)
          
 plt.show()
