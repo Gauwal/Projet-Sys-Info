@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <semaphore.h>
+#include "sem.h"
 
 void my_sem_init(my_sem *sem, int pshared){
     *sem =malloc(sizeof(my_sem));
@@ -17,22 +18,22 @@ void my_sem_destroy(my_sem *sem){
 }
 
 void my_sem_wait(my_sem *sem){
-    lock(&(sem->wait));
+    my_lock(&(sem->wait));
     while(sem->value<=0){}
-    lock(&(sem->mod));
+    my_lock(&(sem->mod));
     (sem->value)--;
-    unlock(&(sem->wait));
-    unlock(&(sem->mod));
+    my_unlock(&(sem->wait));
+    my_unlock(&(sem->mod));
 }
 
 void my_sem_post{
-    lock(&(sem->mod));
+    my_lock(&(sem->mod));
     (sem->value)++;
-    unlock(&(sem->mod));        
+    my_unlock(&(sem->mod));        
 }
 
 
-void lock(int *verrou){
+void my_lock(int *verrou){
   while(*verrou==1){
     asm("movl $1, %%eax;"
     "xchgl %%eax, %1;"
@@ -44,7 +45,7 @@ void lock(int *verrou){
   }
 }
 
-void unlock(int *verrou){
+void my_unlock(int *verrou){
   int arg1=0;
   asm("movl $0, %%eax;"
     "xchgl %%eax, %1;"

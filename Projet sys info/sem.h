@@ -10,7 +10,7 @@ typedef struct my_sem{
     int value;
     int mod;
     int wait;
-}
+}my_sem;
 
 
 void my_sem_init(my_sem *sem, int pshared);

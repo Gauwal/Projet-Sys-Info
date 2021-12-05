@@ -21,6 +21,7 @@ void lock(int *verrou){
         :"r" (*verrou)
         :"%eax"
     );
+    while(*verrou==1){}
   }
 }
 
