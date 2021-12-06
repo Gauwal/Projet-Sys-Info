@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include <semaphore.h>
+#include "sem.h"
 
 int mutex_readcount;
 int mutex_writecount;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
   int i;
 
   
-  my_sem_init(&db, 0, 1);
+  my_sem_init(&db, 0);
   mutex_readcount=0;
   mutex_writecount=0;
   

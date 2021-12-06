@@ -4,15 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <errno.h>
 #include <string.h>
-#include "my_sem.h"
+#include "sem.h"
 
 int prod_done;
 int cons_done;
 int mutex;
-sem_t empty;
-sem_t full;
+my_sem empty;
+my_sem full;
 #define N 8
 
 
@@ -88,8 +87,8 @@ int main(int argc, char* argv[]){
   int nb_producer=atoi(argv[2]);
   int nb_consumer=atoi(argv[1]);
   
-  my_sem_init(&empty, 0 , N);  // buffers vides
-  my_sem_init(&full, 0 , 0); 
+  my_sem_init(&empty, N);  // buffers vides
+  my_sem_init(&full, 0); 
 
   prod_done=0;
   cons_done=0;
@@ -111,8 +110,6 @@ int main(int argc, char* argv[]){
   for(int k=0;k<nb_consumer;k++){
     pthread_join(c[k],NULL);
   }
-  pthread_mutex_destroy(&prod_done);
-  pthread_mutex_destroy(&cons_done);
-  pthread_mutex_destroy(&mutex);
+
   return EXIT_SUCCESS;  
 }

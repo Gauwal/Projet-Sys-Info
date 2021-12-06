@@ -17,4 +17,4 @@ do
     echo $l
 done
 
-
+rm -rf Pro
