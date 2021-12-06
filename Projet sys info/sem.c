@@ -7,7 +7,7 @@
 #include "sem.h"
 
 void my_sem_init(my_sem *sem, int pshared){
-    *sem =malloc(sizeof(my_sem));
+    sem = malloc(sizeof(sem));
     sem->value= pshared;
     sem->mod= 0;
     sem->wait= 0;
@@ -26,7 +26,7 @@ void my_sem_wait(my_sem *sem){
     my_unlock(&(sem->mod));
 }
 
-void my_sem_post{
+void my_sem_post(my_sem *sem){
     my_lock(&(sem->mod));
     (sem->value)++;
     my_unlock(&(sem->mod));        
@@ -34,24 +34,32 @@ void my_sem_post{
 
 
 void my_lock(int *verrou){
-  while(*verrou==1){
-    asm("movl $1, %%eax;"
-    "xchgl %%eax, %1;"
-    "movl %%eax,%0;"
-        :"=r" (*verrou)
-        :"r" (*verrou)
-        :"%eax"
-    );
-  }
+  
+  asm("loop:\t"
+      "movl $1, %%eax;"
+      "xchgl %%eax, %1;"
+      
+      "testl %%eax, %%eax;"
+      "jnz loop\t;"
+      : "=m" (*verrou)
+      : "m" (*verrou)
+      : "%eax"
+      );
+      
+  
+  
 }
 
 void my_unlock(int *verrou){
-  int arg1=0;
+  
   asm("movl $0, %%eax;"
     "xchgl %%eax, %1;"
-    "movl %%eax,%0;"
-        :"=r" (*verrou)
-        :"r" (*verrou)
+    
+        :"=m" (*verrou)
+        :"m" (*verrou)
         :"%eax"
     );
+    
+    
+    
 }

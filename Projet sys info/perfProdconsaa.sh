@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-gcc Prodconsaa.c -o Pro -lpthread
+gcc Prodconsaa.c sem.c -o Pro -lpthread
 
 
 echo '1,2,3,4,5,6' > Prodaa.csv
