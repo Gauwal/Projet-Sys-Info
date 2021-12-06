@@ -13,26 +13,33 @@ int numb;
 
 void lock(int *verrou){
   
-  while(*verrou==1){
-    asm("movl $1, %%eax;"
-    "xchgl %%eax, %1;"
-    "movl %%eax,%0;"
-        :"=r" (*verrou)
-        :"r" (*verrou)
-        :"%eax"
-    );
-  }
+  asm("loop:\t"
+      "movl $1, %%eax;"
+      "xchgl %%eax, %1;"
+      
+      "testl %%eax, %%eax;"
+      "jnz loop\t;"
+      : "=m" (*verrou)
+      : "m" (*verrou)
+      : "%eax"
+      );
+      
+  
+  
 }
 
 void unlock(int *verrou){
   
   asm("movl $0, %%eax;"
     "xchgl %%eax, %1;"
-    "movl %%eax,%0;"
-        :"=r" (*verrou)
-        :"r" (*verrou)
+    
+        :"=m" (*verrou)
+        :"m" (*verrou)
         :"%eax"
     );
+    
+    
+    
 }
 
 int sect_crit(){
@@ -45,7 +52,9 @@ void * work(){
     lock(verrou);
     sect_crit();
     unlock(verrou);
+    
   }; 
+  
   return NULL;
 }
 
@@ -55,6 +64,7 @@ int main(int argc, char *argv[]){
     return EXIT_FAILURE;
     
   }
+  
   numb=atoi(argv[1]);
   verrou=malloc(sizeof(int));
   *verrou=0;
