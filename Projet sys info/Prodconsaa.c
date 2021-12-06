@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include "sem.h"
+#include "my_sem.h"
 
 int prod_done;
 int cons_done;
@@ -36,23 +36,23 @@ void *producteur(){
   int item;
   while(true)
   {
-    pthread_mutex_lock(&prod_done);
+    my_lock(&prod_done);
     if(nbprod<=0){
-      pthread_mutex_unlock(&prod_done);
+      my_unlock(&prod_done);
       break;
     }
     nbprod--;
-    pthread_mutex_unlock(&prod_done);
+    my_unlock(&prod_done);
     
     item=produce(item);
-    sem_wait(&empty); // attente d'une place libre
-    pthread_mutex_lock(&mutex);
+    my_sem_wait(&empty); // attente d'une place libre
+    my_lock(&mutex);
     
     buffer[point]=item;
     point=(point+1)%8;
     
-    pthread_mutex_unlock(&mutex);
-    sem_post(&full); // il y a une place remplie en plus
+    my_unlock(&mutex);
+    my_sem_post(&full); // il y a une place remplie en plus
   }
   return NULL;
 }
@@ -62,22 +62,22 @@ void *consumer()
  int item;
  while(true)
  {
-    pthread_mutex_lock(&cons_done);
+    my_lock(&cons_done);
     if(nbcons<=0){
-      pthread_mutex_unlock(&cons_done);
+      my_unlock(&cons_done);
       break;
     }
     nbcons--;
-    pthread_mutex_unlock(&cons_done);   
+    my_unlock(&cons_done);   
     
-    sem_wait(&full); // attente d'une place remplie
-    pthread_mutex_lock(&mutex);
+    my_sem_wait(&full); // attente d'une place remplie
+    my_lock(&mutex);
     
     item=buffer[carre];
     carre=(carre+1)%8;
     
-    pthread_mutex_unlock(&mutex);
-    sem_post(&empty); // il y a une place libre en plus
+    my_unlock(&mutex);
+    my_sem_post(&empty); // il y a une place libre en plus
     consume(item);
  }
  return NULL;
@@ -88,13 +88,13 @@ int main(int argc, char* argv[]){
   int nb_producer=atoi(argv[2]);
   int nb_consumer=atoi(argv[1]);
   
-  sem_init(&empty, 0 , N);  // buffers vides
-  sem_init(&full, 0 , 0); 
+  my_sem_init(&empty, 0 , N);  // buffers vides
+  my_sem_init(&full, 0 , 0); 
 
-  pthread_mutex_init(&prod_done, NULL);
-  pthread_mutex_init(&cons_done, NULL);
-  pthread_mutex_init(&mutex, NULL); 
-  
+  prod_done=0;
+  cons_done=0;
+  mutex=0;
+
   pthread_t c[nb_consumer];
   pthread_t p[nb_producer];
   for(int j=0;j<nb_consumer;j++){
