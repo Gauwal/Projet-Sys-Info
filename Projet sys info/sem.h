@@ -18,3 +18,7 @@ void my_sem_init(my_sem *sem, int pshared);
 void my_sem_wait(my_sem *sem);
 
 void my_sem_post(my_sem *sem);
+
+void my_lock(int *verrou);
+
+void my_unlock(int *verrou);

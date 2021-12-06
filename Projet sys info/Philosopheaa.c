@@ -8,6 +8,30 @@
 #include <string.h>
 #include "sem.h"
 
+void my_lock(int *verrou){
+  do{
+    asm("movl $1, %%eax;"
+    "xchgl %%eax, %1;"
+    "movl %%eax,%0;"
+        :"=r" (*verrou)
+        :"r" (*verrou)
+        :"%eax"
+    );
+  }while(*verrou==1);
+}
+
+void my_unlock(int *verrou){
+  int arg1=0;
+  asm("movl $0, %%eax;"
+    "xchgl %%eax, %1;"
+    "movl %%eax,%0;"
+        :"=r" (*verrou)
+        :"r" (*verrou)
+        :"%eax"
+    );
+}
+
+
 int numb;
 int *baguettes;
 void mange(){

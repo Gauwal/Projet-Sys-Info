@@ -3,17 +3,21 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 data=pd.read_csv("phil.csv")
+data2=pd.read_csv("philaa.csv")
 
 a=[data["1"],data["2"],data["3"],data["4"],data["5"],data["6"]]
+b=[data2["1"],data2["2"],data2["3"],data2["4"],data2["5"],data2["6"]]
 y=[np.mean(i) for i in a]
 er=[np.std(i) for i in a]
-print(y,er)
+y2=[np.mean(i) for i in b]
+er2=[np.std(i) for i in b]
 
 fig1 = plt.figure()
 
 x = [2*i for i in range(1,7)]
 
 plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-")
+plt.errorbar(x, y2,er2, color="blue", capsize=5, linewidth=1.0, linestyle="-")
 
 plt.xlabel("Nombre de philosophes")
 plt.ylabel("Temps(s)")
