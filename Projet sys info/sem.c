@@ -7,7 +7,7 @@
 #include "sem.h"
 
 void my_sem_init(my_sem *sem, int pshared){
-    sem = malloc(sizeof(sem));
+    sem = malloc(sizeof(my_sem));
     sem->value= pshared;
     sem->mod= 0;
     sem->wait= 0;
@@ -18,8 +18,10 @@ void my_sem_destroy(my_sem *sem){
 }
 
 void my_sem_wait(my_sem *sem){
+    
     my_lock(&(sem->wait));
-    while(sem->value<=0){}
+    
+    while(sem->value<0){}
     my_lock(&(sem->mod));
     (sem->value)--;
     my_unlock(&(sem->wait));
