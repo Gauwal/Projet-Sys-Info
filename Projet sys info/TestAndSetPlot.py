@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-data=pd.read_csv("Test_and_set.csv")
+data=pd.read_csv("Tache2/Test_and_set.csv")
 
 a=[data["1"],data["2"],data["3"],data["4"],data["5"],data["6"],data["7"]]
 y=[np.mean(i) for i in a]

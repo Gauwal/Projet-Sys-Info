@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-data=pd.read_csv("ReadWrite.csv")
-data2=pd.read_csv("ReadWriteaa.csv")
+data=pd.read_csv("Tache1/ReadWrite.csv")
+data2=pd.read_csv("Tache2/ReadWriteaa.csv")
 
 a=[data["1"],data["2"],data["3"],data["4"],data["5"],data["6"]]
 b=[data2["1"],data2["2"],data2["3"],data2["4"],data2["5"],data2["6"]]
