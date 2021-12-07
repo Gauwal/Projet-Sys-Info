@@ -31,6 +31,5 @@ plt.title("Philosophes")
 plt.ylim(0,max(y2)+max(er2))
 plt.xlim(0,13)
 plt.legend(loc="upper left")
-         
-plt.show()
-plt.close()
+
+plt.savefig("Graphes/Phil.png")

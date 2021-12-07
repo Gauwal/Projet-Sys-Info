@@ -10,7 +10,6 @@ do
     for n in {1..6}
     do
 	m=$((2 * $n))
-	m=$((1 + $m))
 	output=$(/usr/bin/time -f %e ./philo $m 2>&1)
 	myarray+=($output)
     done

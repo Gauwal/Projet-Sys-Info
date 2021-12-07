@@ -7,7 +7,6 @@ data=pd.read_csv("Tache2/Test_and_set.csv")
 a=[data["1"],data["2"],data["3"],data["4"],data["5"],data["6"],data["7"]]
 y=[np.mean(i) for i in a]
 er=[np.std(i) for i in a]
-print(y,er)
 
 fig1 = plt.figure()
 
@@ -22,16 +21,15 @@ plt.ylim(0,max(y)+max(er))
 plt.xlim(0,15)
          
          
-data=pd.read_csv("Test_and_Test_and_set.csv")
+data=pd.read_csv("Tache2/Test_and_Test_and_set.csv")
 
 a=[data["1"],data["2"],data["3"],data["4"],data["5"],data["6"],data["7"]]
 y=[np.mean(i) for i in a]
 er=[np.std(i) for i in a]
-print(y,er)
+
 
 
 plt.errorbar(x, y,er, color="red", capsize=5, linewidth=1.0, linestyle="-")
 
 
-plt.show()
-plt.close()
+plt.savefig("Graphes/Test_and_set.png")

@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
      pthread_join(readers[i], NULL);
    }
 
-   my_sem_destroy(&db);
+   //my_sem_destroy(&db);
    
 
    return EXIT_SUCCESS;
