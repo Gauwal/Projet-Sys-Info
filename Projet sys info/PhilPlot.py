@@ -14,18 +14,21 @@ y=[np.mean(i) for i in a]
 er=[np.std(i) for i in a]
 y2=[np.mean(i) for i in b]
 er2=[np.std(i) for i in b]
+y3=[np.mean(i) for i in c]
+er3=[np.std(i) for i in c]
 
 fig1 = plt.figure()
 
 x = [2*i for i in range(1,7)]
 
 plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-", label="Sémaphores POSIX")
-plt.errorbar(x, y2,er2, color="red", capsize=5, linewidth=1.0, linestyle="-", label="Attende active")
+plt.errorbar(x, y2,er2, color="red", capsize=5, linewidth=1.0, linestyle="-", label="Attende active TaS")
+plt.errorbar(x, y3,er3, color="green", capsize=5, linewidth=1.0, linestyle="-", label="Attende active TaTas")
 
 plt.xlabel("Nombre de philosophes")
 plt.ylabel("Temps(s)")
 plt.title("Philosophes")
-plt.ylim(0,max(y)+max(er))
+plt.ylim(0,max(y2)+max(er2))
 plt.xlim(0,13)
 plt.legend(loc="upper left")
          
