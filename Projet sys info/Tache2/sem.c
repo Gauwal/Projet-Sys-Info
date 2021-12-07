@@ -65,3 +65,50 @@ void my_unlock(int *verrou){
     
     
 }
+
+void my_lock_tatas(int *verrou){
+  
+  asm("loop1:"
+  
+      "movl $1, %%eax;"
+      "xchgl %%eax, %1;"
+      
+      "testl %%eax, %%eax;"
+      "jnz loop2;"
+      "jmp end;"
+      
+      
+      "loop2:"
+      
+      "testl $1, %1;"
+      "jnz loop2;"
+      "jmp loop1;"
+      
+      
+      "end:"
+      
+      : "=m" (*verrou)
+      : "m" (*verrou)
+      : "%eax"
+      );
+      
+  
+  
+}
+
+void my_sem_wait_tatas(my_sem *sem){
+    
+    my_lock_tatas(&(sem->wait));
+    
+    while(sem->value<0){}
+    my_lock_tatas(&(sem->mod));
+    (sem->value)--;
+    my_unlock(&(sem->wait));
+    my_unlock(&(sem->mod));
+}
+
+void my_sem_post_tatas(my_sem *sem){
+    my_lock_tatas(&(sem->mod));
+    (sem->value)++;
+    my_unlock(&(sem->mod));        
+}
