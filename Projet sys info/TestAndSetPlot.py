@@ -34,3 +34,4 @@ plt.errorbar(x, y,er, color="red", capsize=5, linewidth=1.0, linestyle="-")
 
 
 plt.show()
+plt.close()

@@ -33,3 +33,4 @@ plt.xlim(0,13)
 plt.legend(loc="upper left")
          
 plt.show()
+plt.close()

@@ -33,3 +33,4 @@ plt.ylim(0,max(y3)+max(er3)*2)
 plt.xlim(0,13)
          
 plt.show()
+plt.close()
