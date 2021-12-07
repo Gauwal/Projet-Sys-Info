@@ -12,7 +12,7 @@ fig1 = plt.figure()
 
 x = [2*i for i in range(1,8)]
 
-plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-")
+plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-", label="Test_and_set")
 
 plt.xlabel("Nombre de threads")
 plt.ylabel("Temps(s)")
@@ -29,7 +29,8 @@ er=[np.std(i) for i in a]
 
 
 
-plt.errorbar(x, y,er, color="red", capsize=5, linewidth=1.0, linestyle="-")
+plt.errorbar(x, y,er, color="red", capsize=5, linewidth=1.0, linestyle="-", label="Test_and_Test_and_set")
 
+plt.legend(loc="upper left")
 
 plt.savefig("Graphes/Test_and_set.png")
