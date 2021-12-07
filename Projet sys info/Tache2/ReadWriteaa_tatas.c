@@ -18,18 +18,13 @@ int writing_nb = 640;
 int reading_nb = 2560;
 
 
-void write_database(){
-}
-void read_database(){
-}
+
 void waste_time(){
   while(rand() > RAND_MAX/10000);
 }
 
 void writer(void){
   while(true){
-    waste_time();
-    
     my_lock_tatas(&mutex_writecount);
 
     if(writing_nb <= 0){
@@ -42,7 +37,7 @@ void writer(void){
     my_unlock(&mutex_writecount);
 
     my_sem_wait_tatas(&db);
-    write_database();
+    waste_time();
     my_sem_post_tatas(&db);
 
     my_lock_tatas(&mutex_writecount);
@@ -68,7 +63,7 @@ void reader(void){
       my_sem_wait_tatas(&db);}
 
     my_unlock(&mutex_readcount);
-    read_database();
+    waste_time();
     my_lock_tatas(&mutex_readcount);
 
     readcount--;
@@ -76,8 +71,6 @@ void reader(void){
       my_sem_post_tatas(&db);}
 
     my_unlock(&mutex_readcount);
-    
-    waste_time();
   }
 }
 
