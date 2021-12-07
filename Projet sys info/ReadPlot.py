@@ -22,7 +22,7 @@ fig1 = plt.figure()
 x = [2*i for i in range(1,7)]
 
 plt.errorbar(x, y,er, color="blue", capsize=5, linewidth=1.0, linestyle="-", label="Sémaphores POSIX")
-plt.errorbar(x, y2,er2, color="red", capsize=5, linewidth=1.0, linestyle="-", label="Sémaphores attende active")
+plt.errorbar(x, y2,er2, color="red", capsize=5, linewidth=1.0, linestyle="-", label="Attende active TaS")
 plt.errorbar(x, y3,er3, color="green", capsize=5, linewidth=1.0, linestyle="-", label="Attende active TaTas")
 
 
@@ -31,6 +31,6 @@ plt.ylabel("Temps(s)")
 plt.title("Readers-Writers")
 plt.ylim(0,max(y3)+max(er3)*2)
 plt.xlim(0,13)
-         
+plt.legend(loc="upper right")         
 
 plt.savefig("Graphes/Read.png")
