@@ -9,6 +9,8 @@
 #include "sem.h"
 
 
+
+
 int numb;
 int *baguettes;
 void mange(){
@@ -20,12 +22,12 @@ void *philosophe(void* arg){
   int right = (left + 1) % numb;
   for(int i=0; i<100000;i++){
     if(left < right){
-      my_lock(&baguettes[left]);
-      my_lock(&baguettes[right]);
+      my_lock_tatas(&baguettes[left]);
+      my_lock_tatas(&baguettes[right]);
     }
     else{
-      my_lock(&baguettes[right]);
-      my_lock(&baguettes[left]);
+      my_lock_tatas(&baguettes[right]);
+      my_lock_tatas(&baguettes[left]);
     }
     mange();
     my_unlock(&baguettes[left]);
