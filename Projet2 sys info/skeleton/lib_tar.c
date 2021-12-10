@@ -16,6 +16,38 @@
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
+    tar_header_t* header;
+    char* test_list = malloc(1024*sizeof(char));
+    char* vrai_list = malloc(1024*sizeof(char));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    for(int i=0;i<1024;i++){
+        test_list[i]=0;
+    }
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){    
+    	read(header,tar_fd,sizeof(tar_header_t));
+        if(strncmp(header->magic,TMAGIC,6)){
+        	return -1;
+        	}
+    	if(strncmp(header->version,TVERSION,6)){
+        	return -2;
+        	}
+    	uint8_t *ptr = (uint8_t*) header;
+    	int size = (int)sizeof(tar_header_t);
+        int offset=0;
+    	uint32_t sum = 0;
+    	while(offset!=(int)sizeof(tar_header_t)){
+		    if(offset>=148 && offset<156){ ///checkintest                                                                                       
+                sum+= (int) '0';
+            }
+            sum += *(ptr+offset);
+            offset++;
+		}
+    	if(*((uint32_t*)(header->chksum))==sum){
+        	return -3;
+       	}
+        lseek(tar_fd,(off_t)header->size,sizeof(tar_header_t));
+        read(vrai_list,tar_fd,sizeof(vrai_list));
+    }
     return 0;
 }
 
@@ -29,6 +61,23 @@ int check_archive(int tar_fd) {
  *         any other value otherwise.
  */
 int exists(int tar_fd, char *path) {
+    tar_header_t* header;
+    char* test_list = malloc(1024*sizeof(char));
+    char* vrai_list = malloc(1024*sizeof(char));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    for(int i=0;i<1024;i++){
+        test_list[i]=0;
+    }
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
+        read(header,tar_fd,sizeof(tar_header_t));
+        if (strncomp(header->name,path)){
+            return 1;
+        }
+
+
+        lseek(tar_fd,(off_t)header->size,sizeof(tar_header_t));
+        read(vrai_list,tar_fd,sizeof(vrai_list));
+    }    
     return 0;
 }
 
@@ -42,6 +91,11 @@ int exists(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_dir(int tar_fd, char *path) {
+    if(exists(tar_fd, path)){
+        if(tar_fd->typeflag==DIRTYPE){
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -55,6 +109,11 @@ int is_dir(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_file(int tar_fd, char *path) {
+    if(exists(tar_fd, path)){
+        if(tar_fd->typeflag==REGTYPE){
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -67,10 +126,13 @@ int is_file(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_symlink(int tar_fd, char *path) {
+    if(exists(tar_fd, path)){
+        if(tar_fd->typeflag==SYMTYPE){
+            return 1;
+        }
+    }
     return 0;
 }
-
-
 /**
  * Lists the entries at a given path in the archive.
  * list() does not recurse into the directories listed at the given path.

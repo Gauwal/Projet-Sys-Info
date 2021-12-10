@@ -106,8 +106,6 @@ int main(int argc, char *argv[]){
      pthread_join(readers[i], NULL);
    }
    
-   pthread_mutex_destroy(&mutex_readcount);
-   pthread_mutex_destroy(&mutex_writecount);
 
    sem_destroy(&db);
    
