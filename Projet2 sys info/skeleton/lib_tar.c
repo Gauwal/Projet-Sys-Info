@@ -16,6 +16,7 @@
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
+    //reset head *TO DO* 
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
@@ -61,6 +62,7 @@ int check_archive(int tar_fd) {
  *         any other value otherwise.
  */
 int exists(int tar_fd, char *path) {
+    //reset head *TO DO*
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
@@ -71,6 +73,7 @@ int exists(int tar_fd, char *path) {
     while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
         read(header,tar_fd,sizeof(tar_header_t));
         if (strncomp(header->name,path)){
+            
             return 1;
         }
 
@@ -91,6 +94,7 @@ int exists(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_dir(int tar_fd, char *path) {
+    //reset head *TO DO*
     if(exists(tar_fd, path)){
         if(tar_fd->typeflag==DIRTYPE){
             return 1;
@@ -109,8 +113,10 @@ int is_dir(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_file(int tar_fd, char *path) {
+    //reset head *TO DO*
+
     if(exists(tar_fd, path)){
-        if(tar_fd->typeflag==REGTYPE){
+        if((tar_fd->typeflag==REGTYPE)||(tar_fd->typeflag==AREGTYPE)){
             return 1;
         }
     }
@@ -126,8 +132,9 @@ int is_file(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_symlink(int tar_fd, char *path) {
+    //reset head *TO DO*
     if(exists(tar_fd, path)){
-        if(tar_fd->typeflag==SYMTYPE){
+        if((tar_fd->typeflag==SYMTYPE)||(tar_fd->typeflag==LINKTYPE)){
             return 1;
         }
     }
@@ -156,6 +163,7 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
+    //reset head *TO DO*
     return 0;
 }
 
@@ -178,5 +186,6 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  *
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
+    //reset head *TO DO*
     return 0;
 }
