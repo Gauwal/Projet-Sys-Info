@@ -22,7 +22,7 @@ int check_archive(int tar_fd) {
     char* vrai_list = malloc(1024*sizeof(char));
     read(vrai_list,tar_fd,sizeof(vrai_list));
     for(int i=0;i<1024;i++){
-        test_list[i]=0;
+        test_list[i]=(char)0;
     }
     while(strncomp(test_list,vrai_list,sizeof(vrai_list))){    
     	read(header,tar_fd,sizeof(tar_header_t));
@@ -68,7 +68,7 @@ int exists(int tar_fd, char *path) {
     char* vrai_list = malloc(1024*sizeof(char));
     read(vrai_list,tar_fd,sizeof(vrai_list));
     for(int i=0;i<1024;i++){
-        test_list[i]=0;
+        test_list[i]=(char)0;
     }
     while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
         read(header,tar_fd,sizeof(tar_header_t));
@@ -164,6 +164,22 @@ int is_symlink(int tar_fd, char *path) {
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     //reset head *TO DO*
+    tar_header_t* header;
+    char* test_list = malloc(1024*sizeof(char));
+    char* vrai_list = malloc(1024*sizeof(char));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    for(int i=0;i<1024;i++){
+        test_list[i]=(char)0;
+    }
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
+    
+    
+    
+    
+    
+    
+    	read(vrai_list,tar_fd,sizeof(vrai_list));
+    }
     return 0;
 }
 
