@@ -225,12 +225,13 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	}
     	
     	for (int i = 0;  i<12; i++){//read 12 byte int
-    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    		off+=((int) * header->size +(11-i))<<((11-i)*8);//might have problem with int size (<12 bytes)
     	}
     	
     	lseek(tar_fd,(off_t)off,SEEK_SET);
     	read(vrai_list,tar_fd,sizeof(vrai_list));
     }
+    //set no_entries
     return 0;
 }
 
@@ -253,6 +254,51 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
  *
  */
 ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *len) {
-    //reset head *TO DO*
-    return 0;
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
+    
+    tar_header_t* header;
+    char* test_list = malloc(1024*sizeof(char));
+    char* vrai_list = malloc(1024*sizeof(char));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
+    for(int i=0;i<1024;i++){
+        test_list[i]=(char)0;
+    }
+    int size=0;
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
+    
+    	read(header,tar_fd,sizeof(tar_header_t) );
+    	
+    	if (strncomp(header->name,path) == 0){
+    		
+    		for (int i = 0;  i<12; i++){//read 12 byte int
+    			size+=((int) * header->size+(11-i))<<((11-i)*8);
+    		}
+    	
+    		if ((int)offset>=size){
+    			return -2;
+    		}
+    		else{
+    			lseek(tar_fd,(off_t)offset,SEEK_SET);
+    			read(dest,tar_fd,fmin((double) *len,size-(int)offset));
+    			*len = fmin((double) *len,size-(int)offset);
+    			return 0;
+    		}
+    	
+    		
+    	
+    	}
+    	
+    	
+    	
+    	
+    	for (int i = 0;  i<12; i++){//read 12 byte int
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+    	
+    	lseek(tar_fd,(off_t)off,SEEK_SET);
+    	read(vrai_list,tar_fd,sizeof(vrai_list));
+    }
+    
+    return -1;
 }
