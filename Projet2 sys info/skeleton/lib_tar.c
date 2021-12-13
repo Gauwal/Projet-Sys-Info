@@ -16,11 +16,12 @@
  *         -3 if the archive contains a header with an invalid checksum value
  */
 int check_archive(int tar_fd) {
-    //reset head *TO DO* 
+    lseek(tar_fd,0,SEEK_SET);//reset to file start 
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
     read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
@@ -45,8 +46,11 @@ int check_archive(int tar_fd) {
 		}
     	if(*((uint32_t*)(header->chksum))==sum){
         	return -3;
-       	}
-        lseek(tar_fd,(off_t)header->size,sizeof(tar_header_t));
+        }
+        for (int i = 0;  i<12; i++){
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+        lseek(tar_fd,(off_t)off,SEEK_SET);
         read(vrai_list,tar_fd,sizeof(vrai_list));
     }
     return 0;
@@ -62,11 +66,12 @@ int check_archive(int tar_fd) {
  *         any other value otherwise.
  */
 int exists(int tar_fd, char *path) {
-    //reset head *TO DO*
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
     read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
@@ -76,9 +81,11 @@ int exists(int tar_fd, char *path) {
             
             return 1;
         }
-
-
-        lseek(tar_fd,(off_t)header->size,sizeof(tar_header_t));
+        
+        for (int i = 0;  i<12; i++){
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+        lseek(tar_fd,(off_t)off,SEEK_SET);
         read(vrai_list,tar_fd,sizeof(vrai_list));
     }    
     return 0;
@@ -94,7 +101,7 @@ int exists(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_dir(int tar_fd, char *path) {
-    //reset head *TO DO*
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
     if(exists(tar_fd, path)){
         if(tar_fd->typeflag==DIRTYPE){
             return 1;
@@ -113,7 +120,7 @@ int is_dir(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_file(int tar_fd, char *path) {
-    //reset head *TO DO*
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
 
     if(exists(tar_fd, path)){
         if((tar_fd->typeflag==REGTYPE)||(tar_fd->typeflag==AREGTYPE)){
@@ -132,7 +139,7 @@ int is_file(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int is_symlink(int tar_fd, char *path) {
-    //reset head *TO DO*
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
     if(exists(tar_fd, path)){
         if((tar_fd->typeflag==SYMTYPE)||(tar_fd->typeflag==LINKTYPE)){
             return 1;
@@ -163,21 +170,65 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
-    //reset head *TO DO*
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
+    
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
     read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
     while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
     
+    	read(header,tar_fd,sizeof(tar_header_t) );
+    	
+    	/*if (is_symlink(tar_fd,header->path){
+    		char* hpath = header->linkname;
+    	}
+    	else{
+    		char* hpath = header->path ;
+    	}*/
+    	
+    	if (strlen(path)<strlen(header->path)){
+    	
+    		bool equal = true;
+    		char* chked_path = header->path;
+    		char* chker = path;
+    		
+    		while  (*chker != '0' && equal){
+    			
+    			if (*chked_path == *chker){
+    				
+    				chked_path++;
+    				chker++;
+    			}
+    			
+    			else {
+    				
+    				equal=false;
+    			}
+    		}
+    		if (equal && (strchr(chked_path,'/')==NULL )){
+    			
+    			if is_dir(tar_fd,header->path){
+    				printf("└── %s \n",chked_path);
+    				list(tar_fd,header->path,entries,no_entries);
+    	    		}
+    	    		
+    	    		else{
+    				printf("└── %s \n",chked_path);
+    			}
+    	    	}
     
-    
-    
-    
-    
+    	}
+    	
+    	for (int i = 0;  i<12; i++){//read 12 byte int
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+    	
+    	lseek(tar_fd,(off_t)off,SEEK_SET);
     	read(vrai_list,tar_fd,sizeof(vrai_list));
     }
     return 0;
