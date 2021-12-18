@@ -108,10 +108,9 @@ int check_archive(int tar_fd) {
        		 octalSize = octalSize / 10;
 
    		}
-   		printf("%ld \n",decimalSize);
 
 
-        	lseek(tar_fd,decimalSize+2*sizeof(tar_header_t)-1,SEEK_CUR);
+        	lseek(tar_fd,((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t),SEEK_CUR);
         	
         }
         
