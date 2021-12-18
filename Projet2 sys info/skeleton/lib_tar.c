@@ -37,22 +37,34 @@ int min(double a,double b){
 	}
 	return b;
 }
+int power(long int base, long int exp){
+	long int result=1;
+	for (exp; exp>0; exp--)
+	{
+		result *= base;
+	}
+	return result;
+}
 
 int check_archive(int tar_fd) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start 
-    tar_header_t* header;
+    tar_header_t* header= malloc(sizeof(tar_header_t));
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
-    read(tar_fd,vrai_list,sizeof(vrai_list));
+    read(tar_fd,vrai_list,1024*sizeof(char));
     lseek(tar_fd,0,SEEK_SET);
-    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))){ 
-    	printf("%s\n",vrai_list);
-    	  
+    long int octalSize;
+    long int decimalSize;
+    int i;
+    while(strncmp(test_list,vrai_list,1024*sizeof(char))){ 
+    	
+    	
     	read(tar_fd,header,sizeof(tar_header_t));
+    	lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
+    	printf("%s\n",header->name);
         if(strncmp(header->magic,TMAGIC,6)){
 		
         	return -1;
@@ -76,15 +88,35 @@ int check_archive(int tar_fd) {
     	if(*((uint32_t*)(header->chksum))==sum){
         	return -3;
         }
+
         if (header->typeflag == DIRTYPE){
+        
         	lseek(tar_fd,(off_t)sizeof(tar_header_t),SEEK_CUR);
         }
         else{
-        	lseek(tar_fd,(off_t)header->size,SEEK_CUR);
+        	octalSize=atoi(header->size);
+        	decimalSize = 0;
+        	i =0;
+
+
+    		while (octalSize != 0)
+
+    		{
+
+        		decimalSize =  decimalSize +(octalSize % 10)* power(8, i++);
+
+       		 octalSize = octalSize / 10;
+
+   		}
+   		printf("%ld \n",decimalSize);
+
+
+        	lseek(tar_fd,decimalSize+2*sizeof(tar_header_t)-1,SEEK_CUR);
+        	
         }
         
-        read(tar_fd,vrai_list,sizeof(vrai_list));
-        lseek(tar_fd,(off_t)-sizeof(vrai_list),SEEK_CUR); 
+        read(tar_fd,vrai_list,1024*sizeof(char));
+        lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
     }
     return 0;
 }
