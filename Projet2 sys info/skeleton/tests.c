@@ -38,6 +38,13 @@ int main(int argc, char **argv) {
 
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
+    
+    char* path = "dir/lib_tar.h";
+    int ret2 = exists(fd, path);
+    printf("true_exists returned %d\n", ret2);
+    path = "bobleponge";
+    ret2 = exists(fd, path);
+    printf("false_exists returned %d\n", ret2);
 
     return 0;
 }

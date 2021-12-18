@@ -1,19 +1,4 @@
 #include "lib_tar.h"
-#include <stddef.h>
-#include <stdint.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-
-
-#define bool unsigned int
-
-#define true 1
-
-#define false 0
-
 
 /**
  * Checks whether the archive is valid.
@@ -30,45 +15,22 @@
  *         -2 if the archive contains a header with an invalid version value,
  *         -3 if the archive contains a header with an invalid checksum value
  */
-
-int min(double a,double b){
-	if(a<b){
-		return a;
-	}
-	return b;
-}
-int power(long int base, long int exp){
-	long int result=1;
-	for (exp; exp>0; exp--)
-	{
-		result *= base;
-	}
-	return result;
-}
-
 int check_archive(int tar_fd) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start 
-    tar_header_t* header= malloc(sizeof(tar_header_t));
+    tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
-    read(tar_fd,vrai_list,1024*sizeof(char));
-    lseek(tar_fd,0,SEEK_SET);
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    long int octalSize;
-    long int decimalSize;
-    int i;
-    while(strncmp(test_list,vrai_list,1024*sizeof(char))){ 
-    	read(tar_fd,header,sizeof(tar_header_t));
-    	lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){    
+    	read(header,tar_fd,sizeof(tar_header_t));
         if(strncmp(header->magic,TMAGIC,6)){
-		
         	return -1;
         	}
-       
-    	if(strncmp(header->version,TVERSION,2)){
-    	
+    	if(strncmp(header->version,TVERSION,6)){
         	return -2;
         	}
     	uint8_t *ptr = (uint8_t*) header;
@@ -76,7 +38,7 @@ int check_archive(int tar_fd) {
         int offset=0;
     	uint32_t sum = 0;
     	while(offset!=(int)sizeof(tar_header_t)){
-	    if(offset>=148 && offset<156){ ///checkintest                                                                                       
+		    if(offset>=148 && offset<156){ ///checkintest                                                                                       
                 sum+= (int) '0';
             }
             sum += *(ptr+offset);
@@ -85,34 +47,11 @@ int check_archive(int tar_fd) {
     	if(*((uint32_t*)(header->chksum))==sum){
         	return -3;
         }
-
-        if (header->typeflag == DIRTYPE){
-        
-        	lseek(tar_fd,(off_t)sizeof(tar_header_t),SEEK_CUR);
-        }
-        else{
-        	octalSize=atoi(header->size);
-        	decimalSize = 0;
-        	i =0;
-
-
-    		while (octalSize != 0)
-
-    		{
-
-        		decimalSize =  decimalSize +(octalSize % 10)* power(8, i++);
-
-       		 octalSize = octalSize / 10;
-
-   		}
-
-
-        	lseek(tar_fd,((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t),SEEK_CUR);
-        	
-        }
-        
-        read(tar_fd,vrai_list,1024*sizeof(char));
-        lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
+        for (int i = 0;  i<12; i++){
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+        lseek(tar_fd,(off_t)off,SEEK_SET);
+        read(vrai_list,tar_fd,sizeof(vrai_list));
     }
     return 0;
 }
@@ -127,53 +66,29 @@ int check_archive(int tar_fd) {
  *         any other value otherwise.
  */
 int exists(int tar_fd, char *path) {
-    lseek(tar_fd,0,SEEK_SET);//reset to file start 
-    tar_header_t* header= malloc(sizeof(tar_header_t));
+    lseek(tar_fd,0,SEEK_SET);//reset to file start
+    tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
-    read(tar_fd,vrai_list,1024*sizeof(char));
-    lseek(tar_fd,0,SEEK_SET);
+    read(vrai_list,tar_fd,sizeof(vrai_list));
+    int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    long int octalSize;
-    long int decimalSize;
-    int i;
-    while(strncmp(test_list,vrai_list,1024*sizeof(char))){ 
-    	read(tar_fd,header,sizeof(tar_header_t));
-    	lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
-        if(strcmp(header->name,path)==0){
-        	return 0;
-        	}
-        if (header->typeflag == DIRTYPE){
-        
-        	lseek(tar_fd,(off_t)sizeof(tar_header_t),SEEK_CUR);
-        }
-        else{
-        	octalSize=atoi(header->size);
-        	decimalSize = 0;
-        	i =0;
-
-
-    		while (octalSize != 0)
-
-    		{
-
-        		decimalSize =  decimalSize +(octalSize % 10)* power(8, i++);
-
-       		 octalSize = octalSize / 10;
-
-   		}
-
-
-        	lseek(tar_fd,((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t),SEEK_CUR);
-        	
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
+        read(header,tar_fd,sizeof(tar_header_t));
+        if (strncomp(header->name,path)){
+            
+            return 1;
         }
         
-        read(tar_fd,vrai_list,1024*sizeof(char));
-        lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
-    }
-    return 1;
+        for (int i = 0;  i<12; i++){
+    		off+=((int) * header->size+(11-i))<<((11-i)*8);
+    	}
+        lseek(tar_fd,(off_t)off,SEEK_SET);
+        read(vrai_list,tar_fd,sizeof(vrai_list));
+    }    
+    return 0;
 }
 
 /**
@@ -188,9 +103,7 @@ int exists(int tar_fd, char *path) {
 int is_dir(int tar_fd, char *path) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start
     if(exists(tar_fd, path)){
-        tar_header_t* header;
-        read(tar_fd,header,sizeof(tar_header_t));
-        if(header->typeflag==DIRTYPE){
+        if(tar_fd->typeflag==DIRTYPE){
             return 1;
         }
     }
@@ -210,9 +123,7 @@ int is_file(int tar_fd, char *path) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start
 
     if(exists(tar_fd, path)){
-        tar_header_t* header;
-        read(tar_fd,header,sizeof(tar_header_t));
-        if((header->typeflag==REGTYPE)||(header->typeflag==AREGTYPE)){
+        if((tar_fd->typeflag==REGTYPE)||(tar_fd->typeflag==AREGTYPE)){
             return 1;
         }
     }
@@ -229,11 +140,8 @@ int is_file(int tar_fd, char *path) {
  */
 int is_symlink(int tar_fd, char *path) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start
-    
     if(exists(tar_fd, path)){
-        tar_header_t* header;
-        read(tar_fd,header,sizeof(tar_header_t));
-        if((header->typeflag==SYMTYPE)||(header->typeflag==LNKTYPE)){
+        if((tar_fd->typeflag==SYMTYPE)||(tar_fd->typeflag==LINKTYPE)){
             return 1;
         }
     }
@@ -267,14 +175,14 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
-    read(tar_fd,vrai_list,sizeof(vrai_list));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
     int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
     
-    	read(tar_fd,header,sizeof(tar_header_t) );
+    	read(header,tar_fd,sizeof(tar_header_t) );
     	
     	/*if (is_symlink(tar_fd,header->path){
     		char* hpath = header->linkname;
@@ -283,10 +191,10 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     		char* hpath = header->path ;
     	}*/
     	
-    	if (strlen(path)<strlen(header->name)){
+    	if (strlen(path)<strlen(header->path)){
     	
     		bool equal = true;
-    		char* chked_path = header->name;
+    		char* chked_path = header->path;
     		char* chker = path;
     		
     		while  (*chker != '0' && equal){
@@ -304,9 +212,9 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     		}
     		if (equal && (strchr(chked_path,'/')==NULL )){
     			
-    			if(is_dir(tar_fd,header->name)){
+    			if is_dir(tar_fd,header->path){
     				printf("└── %s \n",chked_path);
-    				list(tar_fd,header->name,entries,no_entries);
+    				list(tar_fd,header->path,entries,no_entries);
     	    		}
     	    		
     	    		else{
@@ -321,7 +229,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	}
     	
     	lseek(tar_fd,(off_t)off,SEEK_SET);
-    	read(tar_fd,vrai_list,sizeof(vrai_list));
+    	read(vrai_list,tar_fd,sizeof(vrai_list));
     }
     //set no_entries
     return 0;
@@ -351,17 +259,17 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     tar_header_t* header;
     char* test_list = malloc(1024*sizeof(char));
     char* vrai_list = malloc(1024*sizeof(char));
-    read(tar_fd,vrai_list,sizeof(vrai_list));
+    read(vrai_list,tar_fd,sizeof(vrai_list));
     int off = 0;
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
     int size=0;
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
+    while(strncomp(test_list,vrai_list,sizeof(vrai_list))){
     
-    	read(tar_fd,header,sizeof(tar_header_t) );
+    	read(header,tar_fd,sizeof(tar_header_t) );
     	
-    	if (strcmp(header->name,path) == 0){
+    	if (strncomp(header->name,path) == 0){
     		
     		for (int i = 0;  i<12; i++){//read 12 byte int
     			size+=((int) * header->size+(11-i))<<((11-i)*8);
@@ -372,8 +280,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     		}
     		else{
     			lseek(tar_fd,(off_t)offset,SEEK_SET);
-    			read(tar_fd,dest,min((double) *len,size-(int)offset));
-    			*len = min((double) *len,size-(int)offset);
+    			read(dest,tar_fd,fmin((double) *len,size-(int)offset));
+    			*len = fmin((double) *len,size-(int)offset);
     			return 0;
     		}
     	
@@ -389,7 +297,7 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     	}
     	
     	lseek(tar_fd,(off_t)off,SEEK_SET);
-    	read(tar_fd,vrai_list,sizeof(vrai_list));
+    	read(vrai_list,tar_fd,sizeof(vrai_list));
     }
     
     return -1;
