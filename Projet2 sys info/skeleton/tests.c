@@ -5,6 +5,11 @@
 
 #include "lib_tar.h"
 
+#define true 1
+
+#define false 0
+
+
 /**
  * You are free to use this file to write tests for your implementation
  */
@@ -13,7 +18,7 @@ void debug_dump(const uint8_t *bytes, size_t len) {
     for (int i = 0; i < len;) {
         printf("%04x:  ", (int) i);
 
-        for (int j = 0; j < 16 && i + j < len; j++) {
+        for (int j = 0; j < 16 && i + j < len; j++)  {
             printf("%02x ", bytes[i + j]);
         }
         printf("\t");
@@ -39,12 +44,19 @@ int main(int argc, char **argv) {
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
     
-    char* path = "dir/lib_tar.h";
+    
+    char* path = "dir/";
     int ret2 = exists(fd, path);
     printf("true_exists returned %d\n", ret2);
     path = "bobleponge";
     ret2 = exists(fd, path);
     printf("false_exists returned %d\n", ret2);
 
+    path = "dir/";
+    int ret3 = is_dir(fd, path);     
+    printf("true_isdir returned %d\n", ret3); 
+    path = "non";
+    ret3 = is_dir(fd, path);        
+    printf("false_isdir returned %d\n", ret3);   
     return 0;
 }

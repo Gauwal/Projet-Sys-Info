@@ -187,7 +187,7 @@ int exists(int tar_fd, char *path) {
  */
 int is_dir(int tar_fd, char *path) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start
-    if(exists(tar_fd, path)){
+    if(exists(tar_fd, path)==0){
         tar_header_t* header;
         read(tar_fd,header,sizeof(tar_header_t));
         if(header->typeflag==DIRTYPE){
