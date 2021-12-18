@@ -143,7 +143,7 @@ int exists(int tar_fd, char *path) {
     	read(tar_fd,header,sizeof(tar_header_t));
     	lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
         if(strcmp(header->name,path)==0){
-        	return 0;
+        	return 1;
         	}
         if (header->typeflag == DIRTYPE){
         
@@ -173,7 +173,7 @@ int exists(int tar_fd, char *path) {
         read(tar_fd,vrai_list,1024*sizeof(char));
         lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
     }
-    return 1;
+    return 0;
 }
 
 /**
@@ -187,7 +187,7 @@ int exists(int tar_fd, char *path) {
  */
 int is_dir(int tar_fd, char *path) {
     lseek(tar_fd,0,SEEK_SET);//reset to file start
-    if(exists(tar_fd, path)==0){
+    if(exists(tar_fd, path)){
         tar_header_t* header;
         read(tar_fd,header,sizeof(tar_header_t));
         if(header->typeflag==DIRTYPE){

@@ -43,20 +43,61 @@ int main(int argc, char **argv) {
 
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
-    
+    if(ret==0){
+    	printf("SUCCES \n");
+    }
     
     char* path = "dir/";
     int ret2 = exists(fd, path);
     printf("true_exists returned %d\n", ret2);
+    if(ret2==1){
+    	printf("SUCCES \n");
+    }
     path = "bobleponge";
     ret2 = exists(fd, path);
     printf("false_exists returned %d\n", ret2);
+    if(ret2==0){
+    	printf("SUCCES \n");
+    }
 
     path = "dir/";
     int ret3 = is_dir(fd, path);     
     printf("true_isdir returned %d\n", ret3); 
+    if(ret3==1){
+    	printf("SUCCES \n");
+    }
     path = "non";
     ret3 = is_dir(fd, path);        
     printf("false_isdir returned %d\n", ret3);   
+    if(ret3==0){
+    	printf("SUCCES \n");
+    }
+    
+    path = "dir/lib_tar.c";
+    ret3 = is_file(fd, path);     
+    printf("true_isdir returned %d\n", ret3); 
+    if(ret3==1){
+    	printf("SUCCES \n");
+    }
+    path = "non";
+    ret3 = is_file(fd, path);        
+    printf("false_isdir returned %d\n", ret3);   
+    if(ret3==0){
+    	printf("SUCCES \n");
+    }
+    
+    path = "dir/symlink";
+    ret3 = is_symlink(fd, path);     
+    printf("true_isdir returned %d\n", ret3); 
+    if(ret3==1){
+    	printf("SUCCES \n");
+    }
+    path = "non";
+    ret3 = is_symlink(fd, path);        
+    printf("false_isdir returned %d\n", ret3);   
+    if(ret3==0){
+    	printf("SUCCES \n");
+    }
+    
     return 0;
 }
