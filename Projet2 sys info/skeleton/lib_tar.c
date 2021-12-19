@@ -264,6 +264,7 @@ int is_symlink(int tar_fd, char *path) {
         if((header->typeflag==SYMTYPE)||(header->typeflag==LNKTYPE)){
             lseek(tar_fd,0,SEEK_SET);
             free(header);
+            header=NULL;
             return 1;
         }
     }
@@ -309,7 +310,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     long int decimalSize;
     int i;
    
-    char* chked_path;
+    
     char* chker=malloc(strlen(path));
     bool equal;
     long int offset=0;
@@ -323,22 +324,35 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	valid=true;
     	
     }
-
-    
+    char* dirPath=malloc(100*sizeof(char));
+    char* chked_path=malloc(100*sizeof(char));
+    char* name=malloc(100*sizeof(char));
     while(strncmp(test_list,vrai_list,1024*sizeof(char))&&valid){
     	
     	read(tar_fd,header,sizeof(tar_header_t) );
     	lseek(tar_fd,-sizeof(tar_header_t),SEEK_CUR);
 
     	
+    	strcpy(name,header->name);
+    	if (is_symlink(tar_fd,header->name)){
+    		i=0;
+    		while (strchr(header->name + i,'/')!=NULL){
+    			i++;
+    		}
+    		strncpy(dirPath,header->name,i);
+    		dirPath[i]='\0';
+    		strcat(dirPath,header->linkname);
+    		strcpy(entries[count],dirPath);
+    		strcpy(name,dirPath);
+    	}
     	
-    	if (strlen(path)<strlen(header->name)){
+    	if (strlen(path)<strlen(name)){
+
     		
-    		chked_path=malloc(strlen(header->name));
     		
     		equal= true;
 
-    		strcpy(chked_path,header->name);
+    		strcpy(chked_path,name);
     		strcpy(chker,path);
     		
     		while  (*chker != '\0' && equal){
@@ -364,15 +378,12 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     				
     						i++;
     					}
-    					char* dirPath= malloc(i*sizeof(char)+strlen(header->linkname));
-    					strncpy(dirPath,header->name,i);
-    					dirPath[i]='\0';
-    					strcat(dirPath,header->linkname);
-    	    				strcpy(entries[count],dirPath);
+
+    	    				strcpy(entries[count],name);
     	    				
     	    			}
     	    			else{
-    					strcpy(entries[count],header->name);
+    					strcpy(entries[count],name);
     					
     				}
     				count++;
@@ -384,7 +395,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	    	    				
 
     			
-    						strcpy(entries[count],header->name);
+    						strcpy(entries[count],name);
     						count++;
     						
     						
@@ -439,9 +450,10 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	
     	return count;
     }
+    else{
     free(header);
     free(test_list);
-    free(vrai_list);
+    free(vrai_list);}
     
     return 0;
 }
@@ -507,7 +519,7 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     			strncpy(dirPath,header->name,i);
     			dirPath[i]='\0';
     			strcat(dirPath,header->linkname);
-    			
+    			printf("%s\n", dirPath);
     			return read_file(tar_fd, dirPath, offset, dest, len);
     		}
     		

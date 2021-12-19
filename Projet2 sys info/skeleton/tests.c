@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
     int ret = check_archive(fd);
     printf("check_archive returned %d\n", ret);
-    if(ret==0){
+    if(ret==20){
     	printf("SUCCES \n");
     }
     
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     uint8_t *dest = malloc(35*sizeof(uint8_t));
     size_t *len = malloc(sizeof(size_t));
     *len=35;
-    ret = read_file(fd, path,256, dest, len);   
+    ret = read_file(fd, path,1, dest, len);   
          
     
     for (int i = 0; i <*len; i++){
