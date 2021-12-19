@@ -455,12 +455,17 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
         test_list[i]=(char)0;
     }
     int size=0;
+    lseek(tar_fd,0,SEEK_SET);
+    printf("%s\n", path);
     while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
     
     	read(tar_fd,header,sizeof(tar_header_t) );
     	lseek(tar_fd,-sizeof(tar_header_t),SEEK_CUR);
     	
+    	
+    	
     	if (!strcmp(header->name,path)){
+    		
     		if(is_symlink(tar_fd,header->name)){
     			return read_file(tar_fd, header->linkname, offset, dest, len);
     		}

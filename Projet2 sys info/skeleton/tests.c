@@ -109,10 +109,23 @@ int main(int argc, char **argv) {
     path = "dir/";
     
     ret = list(fd, path, entries, no_entries);        
-    printf("false_symlink returned %d\n", ret);   
+    printf("list returned %d\n", ret);   
     if(ret==16){
     	printf("SUCCES \n");
     }
+    
+    path = "dir/lib_tar.c";
+    uint8_t *dest = malloc(16*sizeof(uint8_t));
+    size_t *len = malloc(sizeof(size_t));
+    *len=16;
+    ret = read_file(fd, path,21, dest, len);   
+         
+    printf("read_file returned %d\n", ret);   
+    if(ret==16){
+    	printf("SUCCES \n");
+    }
+    
+    
     
     return 0;
 }
