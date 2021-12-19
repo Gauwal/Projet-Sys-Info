@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     	printf("SUCCES \n");
     }
     
-    path = "dir/lib_tar.c";
+    path = "dir/dir2/Symlink2";
     uint8_t *dest = malloc(35*sizeof(uint8_t));
     size_t *len = malloc(sizeof(size_t));
     *len=35;
