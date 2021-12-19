@@ -115,13 +115,20 @@ int main(int argc, char **argv) {
     }
     
     path = "dir/lib_tar.c";
-    uint8_t *dest = malloc(16*sizeof(uint8_t));
+    uint8_t *dest = malloc(35*sizeof(uint8_t));
     size_t *len = malloc(sizeof(size_t));
-    *len=16;
-    ret = read_file(fd, path,21, dest, len);   
+    *len=35;
+    ret = read_file(fd, path,256, dest, len);   
          
-    printf("read_file returned %d\n", ret);   
-    if(ret==16){
+    
+    for (int i = 0; i <*len; i++){
+    	printf("%c", dest[i]);
+    }
+    printf("\n");
+    
+    printf("read_file returned %d\n", ret);
+    
+    if(ret==0 ){
     	printf("SUCCES \n");
     }
     

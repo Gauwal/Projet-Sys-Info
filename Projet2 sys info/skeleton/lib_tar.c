@@ -451,6 +451,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     long int decimalSize;
     int i;
     
+    int off = 0;
+    
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
@@ -489,8 +491,10 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     			return -2;
     		}
     		else{
-    			lseek(tar_fd,(off_t)offset,SEEK_SET);
+    			lseek(tar_fd,off+offset+sizeof(tar_header_t),SEEK_SET);
+    			
     			*len = min((double) *len,decimalSize-(int)offset);//amount we read
+    			
     			read(tar_fd,dest,*len);
     			
     			return 0;
@@ -502,8 +506,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     	
     	
 	if (header->typeflag == DIRTYPE){
-        
-        	lseek(tar_fd,(off_t)sizeof(tar_header_t),SEEK_CUR);
+        	off += sizeof(tar_header_t);
+        	lseek(tar_fd,off,SEEK_SET);
         }
         else{
         	octalSize=atoi(header->size);
@@ -521,8 +525,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
 
    		}
 
-
-        	lseek(tar_fd,((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t),SEEK_CUR);
+		off += ((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t);
+        	lseek(tar_fd,off,SEEK_SET);
         	
         }
         
