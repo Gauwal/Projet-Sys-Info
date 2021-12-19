@@ -292,6 +292,7 @@ int is_symlink(int tar_fd, char *path) {
  *         any other value otherwise.
  */
 int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
+    //code is a bit redundant sorry, I misunderstood the spec at first and had to make hasty modifications
     
     lseek(tar_fd,0,SEEK_SET);//reset to file start
     
@@ -317,9 +318,9 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     int count = 0;
 
     if (is_dir(tar_fd,path)){
-    	printf("%s \n",path);
+    	
     	valid=true;
-    	count++;
+    	
     }
 
     
@@ -366,10 +367,12 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     					strncpy(dirPath,header->name,i);
     					dirPath[i]='\0';
     					strcat(dirPath,header->linkname);
-    	    				printf("%s \n",dirPath);
+    	    				strcpy(entries[count],dirPath);
+    	    				
     	    			}
     	    			else{
-    					printf("%s \n",header->name);
+    					strcpy(entries[count],header->name);
+    					
     				}
     				count++;
     			
@@ -380,7 +383,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	    	    				
 
     			
-    						printf("%s \n",header->name);
+    						strcpy(entries[count],header->name);
     						count++;
     						
     						
@@ -426,7 +429,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     }
     
     
-    if ( valid){
+    if (valid){
     	*no_entries=count;
     	free(header);
     	free(test_list);

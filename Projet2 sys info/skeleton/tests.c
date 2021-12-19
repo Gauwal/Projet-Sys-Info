@@ -100,13 +100,20 @@ int main(int argc, char **argv) {
     }
     char **entries = malloc(sizeof(char*) * 40); 
     size_t *no_entries = malloc(sizeof(size_t));
-    
-    *no_entries = 3;
+    for(int i =0; i<40;i++){ 
+    	entries[i]=malloc(100*sizeof(char));
+    }
+    *no_entries = 40;
     path = "dir/";
     
-    ret = list(fd, path, entries, no_entries);        
-    printf("list returned %d\n", ret);   
-    if(ret==9){
+    ret = list(fd, path, entries, no_entries); 
+    
+    for(int i =0; i<*no_entries;i++){ 
+    	printf("%s\n",entries[i]);
+    }       
+    printf("list returned %d\n", ret); 
+     
+    if(ret==8){
     	printf("SUCCES \n");
     }
     
