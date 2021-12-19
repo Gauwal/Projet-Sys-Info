@@ -81,17 +81,43 @@ int check_archive(int tar_fd) {
         	return -2;
         	}
     	uint8_t *ptr = (uint8_t*) header;
-    	//int size = (int)sizeof(tar_header_t); //useless
-        int offset=0;
-    	uint32_t sum = 0;
-    	while(offset!=(int)sizeof(tar_header_t)){
-	    if(offset>=148 && offset<156){ ///checkintest                                                                                       
-                sum+= (int) '0';
+    	
+    	int offset=0;
+    	uint64_t sum = 0;
+    	while(offset<sizeof(tar_header_t)){
+	    if(offset>=148 && offset<156){     
+	    	                                                                               
+                sum+= (uint8_t) '0';
+                
             }
-            sum += *(ptr+offset);
-            offset++;
-		}
-    	if(*((uint32_t*)(header->chksum))==sum){
+            else{
+            	
+            	
+            	sum += *(ptr+offset);
+            	
+	    }
+	    
+	    offset++;
+	}
+	sum-=128;
+	
+	octalSize=atoi(header->chksum);
+        decimalSize = 0;
+        i =0;
+
+
+    	while (octalSize != 0)
+
+    	{
+
+        	decimalSize =  decimalSize +(octalSize % 10)* power(8, i++);
+
+       	octalSize = octalSize / 10;
+
+   	}
+    	if(decimalSize!=sum){
+    		printf("%ld    %ld\n",decimalSize,sum);
+    		
         	return -3;
         }
 
