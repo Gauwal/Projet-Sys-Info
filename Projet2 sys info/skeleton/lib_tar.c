@@ -462,8 +462,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     	
     	if (!strcmp(header->name,path)){
     		if(is_symlink(tar_fd,header->name)){
-    			return read_file(tar_fd, header->linkname, offset, *dest, *len);
-    		{
+    			return read_file(tar_fd, header->linkname, offset, dest, len);
+    		}
     		
         	octalSize=atoi(header->size);
         	decimalSize = 0;

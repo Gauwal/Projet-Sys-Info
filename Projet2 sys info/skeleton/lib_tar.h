@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
 typedef struct posix_header
 {                              /* byte offset */
     char name[100];               /*   0 */

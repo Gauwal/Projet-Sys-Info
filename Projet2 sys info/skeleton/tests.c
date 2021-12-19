@@ -48,54 +48,54 @@ int main(int argc, char **argv) {
     }
     
     char* path = "dir/";
-    int ret2 = exists(fd, path);
-    printf("true_exists returned %d\n", ret2);
-    if(ret2==1){
+    ret = exists(fd, path);
+    printf("true_exists returned %d\n", ret);
+    if(ret==1){
     	printf("SUCCES \n");
     }
     path = "bobleponge";
-    ret2 = exists(fd, path);
-    printf("false_exists returned %d\n", ret2);
-    if(ret2==0){
+    ret = exists(fd, path);
+    printf("false_exists returned %d\n", ret);
+    if(ret==0){
     	printf("SUCCES \n");
     }
 
     path = "dir/";
-    int ret3 = is_dir(fd, path);     
-    printf("true_isdir returned %d\n", ret3); 
-    if(ret3==1){
+    ret = is_dir(fd, path);     
+    printf("true_isdir returned %d\n", ret); 
+    if(ret==1){
     	printf("SUCCES \n");
     }
     path = "non";
-    ret3 = is_dir(fd, path);        
-    printf("false_isdir returned %d\n", ret3);   
-    if(ret3==0){
+    ret = is_dir(fd, path);        
+    printf("false_isdir returned %d\n", ret);   
+    if(ret==0){
     	printf("SUCCES \n");
     }
     
     path = "dir/lib_tar.c";
-    ret3 = is_file(fd, path);     
-    printf("true_isdir returned %d\n", ret3); 
-    if(ret3==1){
+    ret = is_file(fd, path);     
+    printf("true_isdir returned %d\n", ret); 
+    if(ret==1){
     	printf("SUCCES \n");
     }
     path = "non";
-    ret3 = is_file(fd, path);        
-    printf("false_isdir returned %d\n", ret3);   
-    if(ret3==0){
+    ret = is_file(fd, path);        
+    printf("false_isdir returned %d\n", ret);   
+    if(ret==0){
     	printf("SUCCES \n");
     }
     
     path = "dir/symlink";
-    ret3 = is_symlink(fd, path);     
-    printf("true_isdir returned %d\n", ret3); 
-    if(ret3==1){
+    ret = is_symlink(fd, path);     
+    printf("true_symlink returned %d\n", ret); 
+    if(ret==1){
     	printf("SUCCES \n");
     }
     path = "non";
-    ret3 = is_symlink(fd, path);        
-    printf("false_isdir returned %d\n", ret3);   
-    if(ret3==0){
+    ret = is_symlink(fd, path);        
+    printf("false_symlink returned %d\n", ret);   
+    if(ret==0){
     	printf("SUCCES \n");
     }
     
