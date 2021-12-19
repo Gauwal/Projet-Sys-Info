@@ -98,19 +98,15 @@ int main(int argc, char **argv) {
     if(ret==0){
     	printf("SUCCES \n");
     }
-    char **entries = malloc(sizeof(char*) * 3); 
+    char **entries = malloc(sizeof(char*) * 40); 
     size_t *no_entries = malloc(sizeof(size_t));
     
-    entries[0] = "dir/dir2/dir4/";
-    
-    entries[1] = "dir/lib_tar.h";
-    entries[2] = "dzddf";
     *no_entries = 3;
     path = "dir/";
     
     ret = list(fd, path, entries, no_entries);        
     printf("list returned %d\n", ret);   
-    if(ret==16){
+    if(ret==9){
     	printf("SUCCES \n");
     }
     
