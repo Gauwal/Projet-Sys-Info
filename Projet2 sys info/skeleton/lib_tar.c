@@ -39,8 +39,7 @@ int min(double a,double b){
 }
 int power(long int base, long int exp){
 	long int result=1;
-	for (exp; exp>0; exp--)
-	{
+	for(; exp>0; exp--){
 		result *= base;
 	}
 	return result;
@@ -75,7 +74,7 @@ int check_archive(int tar_fd) {
         	return -2;
         	}
     	uint8_t *ptr = (uint8_t*) header;
-    	int size = (int)sizeof(tar_header_t);
+    	//int size = (int)sizeof(tar_header_t); //useless
         int offset=0;
     	uint32_t sum = 0;
     	while(offset!=(int)sizeof(tar_header_t)){
@@ -143,7 +142,7 @@ int exists(int tar_fd, char *path) {
     long int octalSize;
     long int decimalSize;
     int i;
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
+    while(strncmp(test_list,vrai_list,1024*sizeof(char))){
         read(tar_fd,header,sizeof(tar_header_t));
         lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
         if (strcmp(header->name,path)==0){
@@ -306,7 +305,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     }
 
     ++depth;
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))&&valid){
+    while(strncmp(test_list,vrai_list,1024*sizeof(char))&&valid){
     	
     	read(tar_fd,header,sizeof(tar_header_t) );
     	lseek(tar_fd,-sizeof(tar_header_t),SEEK_CUR);
@@ -456,10 +455,10 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    int size=0;
+    //int size=0; //useless
     lseek(tar_fd,0,SEEK_SET);
     printf("%s\n", path);
-    while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
+    while(strncmp(test_list,vrai_list,1024*sizeof(char))){
     
     	read(tar_fd,header,sizeof(tar_header_t) );
     	lseek(tar_fd,-sizeof(tar_header_t),SEEK_CUR);
