@@ -59,6 +59,7 @@ int check_archive(int tar_fd) {
     long int octalSize;
     long int decimalSize;
     int i;
+    int count =0;
     while(strncmp(test_list,vrai_list,1024*sizeof(char))){ 
     	
     	
@@ -118,7 +119,7 @@ int check_archive(int tar_fd) {
         	lseek(tar_fd,((decimalSize/512 * 512) + (decimalSize % 512 !=0)*512) +sizeof(tar_header_t),SEEK_CUR);
         	
         }
-        
+        count++;
         read(tar_fd,vrai_list,1024*sizeof(char));
         lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
         
@@ -126,7 +127,7 @@ int check_archive(int tar_fd) {
     free(header);
     free(test_list);
     free(vrai_list);
-    return 0;
+    return count;
 }
 
 /**
@@ -313,7 +314,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     bool equal;
     long int offset=0;
     
-    bool valid;
+    bool valid=false;
     
     int count = 0;
 
@@ -480,10 +481,12 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     for(int i=0;i<1024;i++){
         test_list[i]=(char)0;
     }
-    //int size=0; //useless
+    
     
     
     lseek(tar_fd,0,SEEK_SET);
+    if (!is_file(tar_fd,path)&&!is_symlink(tar_fd,path)){return -1;}
+
     
     while(strncmp(test_list,vrai_list,1024*sizeof(char))){
     
