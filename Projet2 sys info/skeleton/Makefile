@@ -4,6 +4,7 @@ GCC= gcc
 all: tests lib_tar.o
 
 lib_tar.o: lib_tar.c lib_tar.h
+	cc -g -Wall -Werror   -c -o lib_tar.o lib_tar.c
 
 tests: tests.c lib_tar.h lib_tar.c
 	gcc tests.c lib_tar.h lib_tar.c -o test
