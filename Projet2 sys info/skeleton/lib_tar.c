@@ -66,11 +66,16 @@ int check_archive(int tar_fd) {
     	lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
     	
         if(strncmp(header->magic,TMAGIC,6)){
-		
+		free(header);
+		free(test_list);
+		free(vrai_list);
         	return -1;
         	}
        
     	if(strncmp(header->version,TVERSION,2)){
+    		free(header);
+		free(test_list);
+		free(vrai_list);
     	
         	return -2;
         	}
@@ -118,6 +123,9 @@ int check_archive(int tar_fd) {
         lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR); 
         
     }
+    free(header);
+    free(test_list);
+    free(vrai_list);
     return 0;
 }
 
@@ -148,7 +156,9 @@ int exists(int tar_fd, char *path) {
         lseek(tar_fd,(off_t)-sizeof(tar_header_t),SEEK_CUR);
         if (strcmp(header->name,path)==0){
             
-            
+                
+            free(test_list);
+            free(vrai_list);
             return 1;
         }
         
@@ -180,6 +190,9 @@ int exists(int tar_fd, char *path) {
         read(tar_fd,vrai_list,1024*sizeof(char));
         lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR);
     }    
+    free(header);
+    free(test_list);
+    free(vrai_list);
     return 0;
 }
 
@@ -199,10 +212,12 @@ int is_dir(int tar_fd, char *path) {
         read(tar_fd,header,sizeof(tar_header_t));
         if(header->typeflag==DIRTYPE){
             lseek(tar_fd,0,SEEK_SET);
+            free(header);
             return 1;
         }
     }
     lseek(tar_fd,0,SEEK_SET);
+    
     return 0;
 }
 
@@ -223,6 +238,7 @@ int is_file(int tar_fd, char *path) {
         read(tar_fd,header,sizeof(tar_header_t));
         if((header->typeflag==REGTYPE)||(header->typeflag==AREGTYPE)){
             lseek(tar_fd,0,SEEK_SET);
+            free(header);
             return 1;
         }
     }
@@ -246,6 +262,7 @@ int is_symlink(int tar_fd, char *path) {
         read(tar_fd,header,sizeof(tar_header_t));
         if((header->typeflag==SYMTYPE)||(header->typeflag==LNKTYPE)){
             lseek(tar_fd,0,SEEK_SET);
+            free(header);
             return 1;
         }
     }
@@ -381,6 +398,7 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     	    			}
     	    		}
     	    	}
+    	    	
     	}
     	
 	if (header->typeflag == DIRTYPE){
@@ -416,8 +434,17 @@ int list(int tar_fd, char *path, char **entries, size_t *no_entries) {
     --depth;
     if (depth==0 && valid){
     	*no_entries=count;
+    	free(header);
+    	free(test_list);
+    	free(vrai_list);
+    	
+    	
     	return count;
     }
+    free(header);
+    free(test_list);
+    free(vrai_list);
+    
     return 0;
 }
 
@@ -457,8 +484,10 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
         test_list[i]=(char)0;
     }
     int size=0;
+    
+    
     lseek(tar_fd,0,SEEK_SET);
-    printf("%s\n", path);
+    
     while(strncmp(test_list,vrai_list,sizeof(vrai_list))){
     
     	read(tar_fd,header,sizeof(tar_header_t) );
@@ -469,7 +498,17 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     	if (!strcmp(header->name,path)){
     		
     		if(is_symlink(tar_fd,header->name)){
-    			return read_file(tar_fd, header->linkname, offset, dest, len);
+    			i=0;
+    			while (strchr(header->name + i,'/')!=NULL){
+    				
+    				i++;
+    			}
+    			char* dirPath= malloc(i*sizeof(char)+strlen(header->linkname));
+    			strncpy(dirPath,header->name,i);
+    			dirPath[i]='\0';
+    			strcat(dirPath,header->linkname);
+    			
+    			return read_file(tar_fd, dirPath, offset, dest, len);
     		}
     		
         	octalSize=atoi(header->size);
@@ -488,6 +527,9 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
    		}
     	
     		if ((int)offset>=decimalSize){
+    		    	free(header);
+    		    	free(test_list);
+    		    	free(vrai_list);
     			return -2;
     		}
     		else{
@@ -497,6 +539,9 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
     			
     			read(tar_fd,dest,*len);
     			
+    			free(header);
+    		    	free(test_list);
+    		    	free(vrai_list);
     			return 0;
     		}
     	
@@ -533,7 +578,8 @@ ssize_t read_file(int tar_fd, char *path, size_t offset, uint8_t *dest, size_t *
         read(tar_fd,vrai_list,1024*sizeof(char));
         lseek(tar_fd,(off_t)-1024*sizeof(char),SEEK_CUR);
     }    
-
-    
+    free(header);
+    free(test_list);
+    free(vrai_list);
     return -1;
 }
